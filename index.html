@@ -1,1 +1,201 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>East Tennessee IT Solutions | Operations Center</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1220;color:#e5edf7;font-family:Arial,sans-serif}
+header{background:#111e32;padding:22px 5%;border-bottom:1px solid #263951}
+header h1{margin:0;color:#56aaff;font-size:24px}
+header p{color:#9db0c9;margin:7px 0 0}
+nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+nav a{color:#c4d5e9;text-decoration:none;padding:9px 13px;background:#1c2c43;border-radius:6px;font-size:13px}
+main{max-width:1200px;margin:auto;padding:25px 5%}
+.heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.heading h2{margin:0}
+.muted{color:#91a4bd;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:22px}
+.card{background:#142238;border:1px solid #263b58;border-radius:10px;padding:19px}
+.card h3{margin:0 0 12px;color:#a9c7e9;font-size:15px}
+.value{font-size:25px;font-weight:bold;margin:10px 0}
+.status{font-size:12px;color:#42d392}
+.warning{color:#ffc66d}
+button{background:#2377cf;color:white;border:0;padding:10px 15px;border-radius:6px;cursor:pointer}
+button:hover{background:#368ee9}
+section{margin-top:32px}
+input,select{background:#0b1729;border:1px solid #344963;color:white;padding:10px;border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{text-align:left;padding:12px;border-bottom:1px solid #2a3d56}
+footer{text-align:center;padding:25px;color:#8296b1;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>EAST TENNESSEE IT SOLUTIONS</h1>
+<p>IT Operations Center | Server & Network Management</p>
+<nav>
+<a href="#dashboard">Dashboard</a>
+<a href="#servers">Servers</a>
+<a href="#network">Network</a>
+<a href="#devices">Devices</a>
+<a href="#tickets">Help Desk</a>
+</nav>
+</header>
+
+<main>
+<div class="heading" id="dashboard">
+<div>
+<h2>Operations Dashboard</h2>
+<p class="muted">IT Infrastructure Overview</p>
+</div>
+<div class="muted" id="clock">Loading clock...</div>
+</div>
+
+<div class="grid">
+<div class="card">
+<h3>SERVER STATUS</h3>
+<div class="value" id="serverCount">2</div>
+<div class="status">● Lab servers configured</div>
+</div>
+<div class="card">
+<h3>NETWORK STATUS</h3>
+<div class="value">LAB</div>
+<div class="status">● Monitoring dashboard ready</div>
+</div>
+<div class="card">
+<h3>REGISTERED DEVICES</h3>
+<div class="value" id="deviceCount">0</div>
+<div class="muted">Devices in inventory</div>
+</div>
+<div class="card">
+<h3>OPEN TICKETS</h3>
+<div class="value" id="ticketCount">0</div>
+<div class="muted">Help desk tickets</div>
+</div>
+</div>
+
+<section id="servers">
+<h2>Server Management</h2>
+<p class="muted">Your virtual server lab</p>
+<div class="grid">
+<div class="card">
+<h3>WINDOWS SERVER</h3>
+<div class="value">Windows</div>
+<div class="warning">● Awaiting connection</div>
+<p class="muted">Active Directory / DNS / DHCP</p>
+</div>
+<div class="card">
+<h3>LINUX SERVER</h3>
+<div class="value">Ubuntu</div>
+<div class="warning">● Awaiting connection</div>
+<p class="muted">SSH / Linux Administration</p>
+</div>
+</div>
+</section>
+
+<section id="network">
+<h2>Network Tools</h2>
+<div class="grid">
+<div class="card">
+<h3>IP ADDRESS LOOKUP</h3>
+<input id="ip" placeholder="Enter IP address">
+<button onclick="lookupIP()">Check IP</button>
+<p id="ipResult" class="muted"></p>
+</div>
+<div class="card">
+<h3>NETWORK DIAGNOSTICS</h3>
+<p class="muted">Run diagnostics on your computer using Windows tools.</p>
+<button onclick="alert('Open Windows Terminal and run: ipconfig /all')">IP Configuration</button>
+<button onclick="alert('Open Windows Terminal and run: ping 127.0.0.1')">Ping Loopback</button>
+</div>
+</div>
+</section>
+
+<section id="devices">
+<h2>Device Inventory</h2>
+<div class="card">
+<input id="deviceName" placeholder="Device name">
+<input id="deviceType" placeholder="Device type">
+<button onclick="addDevice()">Add Device</button>
+<table>
+<thead><tr><th>Device</th><th>Type</th></tr></thead>
+<tbody id="deviceList"></tbody>
+</table>
+</div>
+</section>
+
+<section id="tickets">
+<h2>Help Desk Ticket System</h2>
+<div class="card">
+<input id="ticketTitle" placeholder="Describe the issue">
+<select id="priority">
+<option>Low</option><option>Medium</option><option>High</option>
+</select>
+<button onclick="addTicket()">Create Ticket</button>
+<table>
+<thead><tr><th>Ticket</th><th>Priority</th><th>Status</th></tr></thead>
+<tbody id="ticketList"></tbody>
+</table>
+</div>
+</section>
+</main>
+
+<footer>
+East Tennessee IT Solutions | IT Operations Center<br>
+Training & Server Lab Environment
+</footer>
+
+<script>
+let devices=[];
+let tickets=[];
+
+function updateClock(){
+document.getElementById('clock').textContent=new Date().toLocaleString();
+}
+setInterval(updateClock,1000);
+updateClock();
+
+function lookupIP(){
+let ip=document.getElementById('ip').value.trim();
+let valid=/^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)$/.test(ip);
+document.getElementById('ipResult').textContent=
+valid?'Valid IPv4 address format':'Please enter a valid IPv4 address';
+}
+
+function addDevice(){
+let name=document.getElementById('deviceName').value.trim();
+let type=document.getElementById('deviceType').value.trim();
+if(!name||!type){alert('Enter device name and type');return;}
+devices.push({name,type});
+renderDevices();
+document.getElementById('deviceName').value='';
+document.getElementById('deviceType').value='';
+}
+
+function renderDevices(){
+document.getElementById('deviceList').innerHTML=devices.map(d=>
+`<tr><td>${escapeHTML(d.name)}</td><td>${escapeHTML(d.type)}</td></tr>`).join('');
+document.getElementById('deviceCount').textContent=devices.length;
+}
+
+function addTicket(){
+let title=document.getElementById('ticketTitle').value.trim();
+let priority=document.getElementById('priority').value;
+if(!title){alert('Enter a ticket description');return;}
+tickets.push({title,priority});
+document.getElementById('ticketList').innerHTML=tickets.map(t=>
+`<tr><td>${escapeHTML(t.title)}</td><td>${t.priority}</td><td>Open</td></tr>`).join('');
+document.getElementById('ticketCount').textContent=tickets.length;
+document.getElementById('ticketTitle').value='';
+}
+
+function escapeHTML(s){
+return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+</body>
+</html>
+
